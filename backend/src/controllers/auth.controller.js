@@ -2,7 +2,7 @@ const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const pool = require("../config/db");
 
-async function criarAdminInicial(req, res) {
+async function criarConta(req, res) {
   try {
     const { nome, email, senha, nome_empresa, telefone_empresa } = req.body;
 
@@ -49,7 +49,7 @@ async function criarAdminInicial(req, res) {
       await client.query("COMMIT");
 
       return res.status(201).json({
-        message: "Admin inicial criado com sucesso.",
+        message: "Conta criada com sucesso.",
         empresa,
         usuario: usuarioResult.rows[0],
       });
@@ -60,10 +60,10 @@ async function criarAdminInicial(req, res) {
       client.release();
     }
   } catch (error) {
-    console.error("Erro ao criar admin inicial:", error);
+    console.error("Erro ao criar conta:", error);
 
     return res.status(500).json({
-      message: "Erro ao criar admin inicial.",
+      message: "Erro ao criar conta.",
     });
   }
 }
@@ -142,7 +142,70 @@ async function login(req, res) {
   }
 }
 
+async function alterarSenha(req, res) {
+  try {
+    const usuarioId = req.usuario.id;
+    const { senha_atual, nova_senha } = req.body;
+
+    if (!senha_atual || !nova_senha) {
+      return res.status(400).json({
+        message: "Senha atual e nova senha são obrigatórias.",
+      });
+    }
+
+    if (nova_senha.length < 6) {
+      return res.status(400).json({
+        message: "A nova senha deve ter pelo menos 6 caracteres.",
+      });
+    }
+
+    const result = await pool.query(
+      `SELECT id, senha 
+       FROM usuarios 
+       WHERE id = $1`,
+      [usuarioId],
+    );
+
+    if (result.rows.length === 0) {
+      return res.status(404).json({
+        message: "Usuário não encontrado.",
+      });
+    }
+
+    const usuario = result.rows[0];
+
+    const senhaAtualValida = await bcrypt.compare(senha_atual, usuario.senha);
+
+    if (!senhaAtualValida) {
+      return res.status(401).json({
+        message: "Senha atual inválida.",
+      });
+    }
+
+    const novaSenhaCriptografada = await bcrypt.hash(nova_senha, 10);
+
+    await pool.query(
+      `UPDATE usuarios
+       SET senha = $1,
+           updated_at = CURRENT_TIMESTAMP
+       WHERE id = $2`,
+      [novaSenhaCriptografada, usuarioId],
+    );
+
+    return res.json({
+      message: "Senha alterada com sucesso.",
+    });
+  } catch (error) {
+    console.error("Erro ao alterar senha:", error);
+
+    return res.status(500).json({
+      message: "Erro ao alterar senha.",
+    });
+  }
+}
+
 module.exports = {
-  criarAdminInicial,
+  criarConta,
   login,
+  alterarSenha,
 };
