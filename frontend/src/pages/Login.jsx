@@ -11,7 +11,7 @@ import {
 import axios from "axios";
 import PropTypes from "prop-types";
 
-const API_URL = "http://localhost:3001";
+const API_URL = import.meta.env.VITE_API_URL || "http://localhost:3001";
 
 function Login({ onLogin }) {
   const [email, setEmail] = useState("");
