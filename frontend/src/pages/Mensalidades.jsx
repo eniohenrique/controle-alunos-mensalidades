@@ -176,16 +176,8 @@ function Mensalidades({
   }
 
   async function enviarComprovanteSeNecessario() {
-    if (formaPagamento !== "PIX") {
-      return "";
-    }
-
-    if (comprovanteUrl) {
-      return comprovanteUrl;
-    }
-
     if (!arquivo) {
-      throw new Error("Comprovante é obrigatório para pagamento via PIX.");
+      return comprovanteUrl || "";
     }
 
     const token = localStorage.getItem("token");
