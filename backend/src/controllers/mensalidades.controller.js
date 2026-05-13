@@ -177,12 +177,6 @@ async function registrarPagamento(req, res) {
       });
     }
 
-    if (forma_pagamento === "PIX" && !comprovante_url) {
-      return res.status(400).json({
-        message: "Comprovante é obrigatório para pagamento via PIX.",
-      });
-    }
-
     const alunoResult = await pool.query(
       `SELECT id, valor_mensalidade
        FROM alunos
