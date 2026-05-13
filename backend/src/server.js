@@ -10,6 +10,7 @@ const authRoutes = require("./routes/auth.routes");
 const alunosRoutes = require("./routes/alunos.routes");
 const mensalidadesRoutes = require("./routes/mensalidades.routes");
 const uploadRoutes = require("./routes/upload.routes");
+const funcionariosRoutes = require("./routes/funcionarios.routes");
 
 const allowedOrigins = [
   "http://localhost:5173",
@@ -38,6 +39,7 @@ app.use("/api/auth", authRoutes);
 app.use("/api/alunos", alunosRoutes);
 app.use("/api/mensalidades", mensalidadesRoutes);
 app.use("/api/upload", uploadRoutes);
+app.use("/api/funcionarios", funcionariosRoutes);
 
 app.get("/", (req, res) => {
   res.json({

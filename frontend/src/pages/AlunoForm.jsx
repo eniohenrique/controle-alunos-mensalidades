@@ -48,11 +48,38 @@ function AlunoForm({ onVoltar, onSalvo, alunoEdicao }) {
     valor_mensalidade: "",
     ativo: true,
     observacao: "",
+    funcionario_id: "",
   });
 
   const [horarios, setHorarios] = useState([]);
   const [erro, setErro] = useState("");
   const [salvando, setSalvando] = useState(false);
+  const [funcionarios, setFuncionarios] = useState([]);
+  const [vincularFuncionario, setVincularFuncionario] = useState(false);
+
+  async function carregarFuncionarios() {
+    try {
+      const token = localStorage.getItem("token");
+
+      const response = await axios.get(`${API_URL}/api/funcionarios`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      const funcionariosAtivos = (response.data || []).filter(
+        (funcionario) => funcionario.ativo,
+      );
+
+      setFuncionarios(funcionariosAtivos);
+    } catch (error) {
+      console.error("Erro ao carregar funcionários:", error);
+    }
+  }
+
+  useEffect(() => {
+    carregarFuncionarios();
+  }, []);
 
   useEffect(() => {
     if (alunoEdicao) {
@@ -65,9 +92,11 @@ function AlunoForm({ onVoltar, onSalvo, alunoEdicao }) {
         valor_mensalidade: alunoEdicao.valor_mensalidade || "",
         ativo: alunoEdicao.ativo === undefined ? true : alunoEdicao.ativo,
         observacao: alunoEdicao.observacao || "",
+        funcionario_id: alunoEdicao.funcionario_id || "",
       });
 
       setHorarios(alunoEdicao.horarios || []);
+      setVincularFuncionario(Boolean(alunoEdicao.funcionario_id));
     }
   }, [alunoEdicao]);
 
@@ -116,6 +145,11 @@ function AlunoForm({ onVoltar, onSalvo, alunoEdicao }) {
       return;
     }
 
+    if (vincularFuncionario && !form.funcionario_id) {
+      setErro("Selecione o funcionário responsável pelo aluno.");
+      return;
+    }
+
     try {
       setSalvando(true);
 
@@ -125,6 +159,9 @@ function AlunoForm({ onVoltar, onSalvo, alunoEdicao }) {
         ...form,
         dia_vencimento: Number(form.dia_vencimento),
         valor_mensalidade: Number(form.valor_mensalidade || 0),
+        funcionario_id: vincularFuncionario
+          ? form.funcionario_id || null
+          : null,
         horarios,
       };
 
@@ -247,6 +284,49 @@ function AlunoForm({ onVoltar, onSalvo, alunoEdicao }) {
               <CheckCircle2 size={20} />
               {form.ativo ? "Aluno ativo" : "Aluno inativo"}
             </button>
+            {funcionarios.length > 0 && (
+              <>
+                <button
+                  className={`active-toggle ${vincularFuncionario ? "active" : ""}`}
+                  type="button"
+                  onClick={() => {
+                    const novoValor = !vincularFuncionario;
+
+                    setVincularFuncionario(novoValor);
+
+                    if (!novoValor) {
+                      atualizarCampo("funcionario_id", "");
+                    }
+                  }}
+                >
+                  <UserRound size={20} />
+                  {vincularFuncionario
+                    ? "Funcionário vinculado"
+                    : "Vincular funcionário a este aluno"}
+                </button>
+
+                {vincularFuncionario && (
+                  <>
+                    <label>Funcionário responsável</label>
+                    <select
+                      value={form.funcionario_id}
+                      onChange={(e) =>
+                        atualizarCampo("funcionario_id", e.target.value)
+                      }
+                    >
+                      <option value="">Selecione um funcionário</option>
+
+                      {funcionarios.map((funcionario) => (
+                        <option key={funcionario.id} value={funcionario.id}>
+                          {funcionario.nome} -{" "}
+                          {Number(funcionario.percentual_comissao)}%
+                        </option>
+                      ))}
+                    </select>
+                  </>
+                )}
+              </>
+            )}
           </section>
 
           <section className="form-section">

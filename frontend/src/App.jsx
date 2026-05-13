@@ -6,6 +6,8 @@ import Alunos from "./pages/Alunos";
 import Mensalidades from "./pages/Mensalidades";
 import Perfil from "./pages/Perfil";
 import Relatorios from "./pages/Relatorios";
+import Funcionarios from "./pages/Funcionarios";
+import Comissoes from "./pages/Comissoes";
 
 function App() {
   const [usuario, setUsuario] = useState(() => {
@@ -103,6 +105,14 @@ function App() {
     return <Relatorios onVoltar={() => setTela("dashboard")} />;
   }
 
+  if (tela === "funcionarios") {
+    return <Funcionarios onVoltar={() => setTela("dashboard")} />;
+  }
+
+  if (tela === "comissoes") {
+    return <Comissoes onVoltar={() => setTela("dashboard")} />;
+  }
+
   return (
     <Dashboard
       usuario={usuario}
@@ -112,6 +122,8 @@ function App() {
       onAbrirMensalidades={abrirMensalidades}
       onAbrirPerfil={() => setTela("perfil")}
       onAbrirRelatorios={() => setTela("relatorios")}
+      onAbrirFuncionarios={() => setTela("funcionarios")}
+      onAbrirComissoes={() => setTela("comissoes")}
     />
   );
 }

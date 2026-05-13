@@ -241,8 +241,109 @@ async function registrarPagamento(req, res) {
   }
 }
 
+async function listarComissoes(req, res) {
+  try {
+    const empresaId = req.usuario.empresa_id;
+
+    const hoje = new Date();
+    const mes = Number(req.query.mes || hoje.getMonth() + 1);
+    const ano = Number(req.query.ano || hoje.getFullYear());
+
+    const result = await pool.query(
+      `SELECT
+          f.id AS funcionario_id,
+          f.nome AS funcionario_nome,
+          f.percentual_comissao,
+
+          a.id AS aluno_id,
+          a.nome AS aluno_nome,
+          a.valor_mensalidade,
+          a.ativo,
+
+          m.id AS mensalidade_id,
+          m.valor AS valor_pago,
+          m.mes,
+          m.ano,
+          m.status,
+          m.data_pagamento,
+
+          ROUND(
+            (COALESCE(m.valor, 0) * f.percentual_comissao / 100),
+            2
+          ) AS valor_comissao
+       FROM mensalidades m
+       INNER JOIN alunos a ON a.id = m.aluno_id
+       INNER JOIN funcionarios f ON f.id = a.funcionario_id
+       WHERE a.empresa_id = $1
+         AND f.empresa_id = $1
+         AND a.ativo = true
+         AND f.ativo = true
+         AND m.status = 'PAGO'
+         AND m.mes = $2
+         AND m.ano = $3
+       ORDER BY f.nome ASC, a.nome ASC`,
+      [empresaId, mes, ano],
+    );
+
+    const funcionariosMap = new Map();
+
+    for (const item of result.rows) {
+      if (!funcionariosMap.has(item.funcionario_id)) {
+        funcionariosMap.set(item.funcionario_id, {
+          funcionario_id: item.funcionario_id,
+          funcionario_nome: item.funcionario_nome,
+          percentual_comissao: Number(item.percentual_comissao || 0),
+          total_recebido: 0,
+          total_comissao: 0,
+          quantidade_alunos: 0,
+          alunos: [],
+        });
+      }
+
+      const funcionario = funcionariosMap.get(item.funcionario_id);
+
+      funcionario.total_recebido += Number(item.valor_pago || 0);
+      funcionario.total_comissao += Number(item.valor_comissao || 0);
+      funcionario.quantidade_alunos += 1;
+
+      funcionario.alunos.push({
+        aluno_id: item.aluno_id,
+        aluno_nome: item.aluno_nome,
+        valor_pago: Number(item.valor_pago || 0),
+        valor_comissao: Number(item.valor_comissao || 0),
+        data_pagamento: item.data_pagamento,
+      });
+    }
+
+    const funcionarios = Array.from(funcionariosMap.values()).map((item) => ({
+      ...item,
+      total_recebido: Number(item.total_recebido.toFixed(2)),
+      total_comissao: Number(item.total_comissao.toFixed(2)),
+    }));
+
+    const totalGeralComissao = funcionarios.reduce((total, funcionario) => {
+      return total + funcionario.total_comissao;
+    }, 0);
+
+    return res.json({
+      mes,
+      ano,
+      total_funcionarios: funcionarios.length,
+      total_geral_comissao: Number(totalGeralComissao.toFixed(2)),
+      funcionarios,
+    });
+  } catch (error) {
+    console.error("Erro ao listar comissões:", error);
+
+    return res.status(500).json({
+      message: "Erro ao listar comissões.",
+    });
+  }
+}
+
 module.exports = {
   listarMensalidades,
   listarAtrasadas,
   registrarPagamento,
+  listarComissoes,
 };

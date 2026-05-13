@@ -15,6 +15,9 @@ async function listarAlunos(req, res) {
           a.valor_mensalidade,
           a.ativo,
           a.observacao,
+          a.funcionario_id,
+          f.nome AS funcionario_nome,
+          f.percentual_comissao AS funcionario_percentual_comissao,
           a.created_at,
           COALESCE(
             json_agg(
@@ -26,11 +29,12 @@ async function listarAlunos(req, res) {
             ) FILTER (WHERE ah.id IS NOT NULL),
             '[]'
           ) AS horarios
-       FROM alunos a
-       LEFT JOIN aluno_horarios ah ON ah.aluno_id = a.id
-       WHERE a.empresa_id = $1
-       GROUP BY a.id
-       ORDER BY a.nome ASC`,
+      FROM alunos a
+      LEFT JOIN funcionarios f ON f.id = a.funcionario_id
+      LEFT JOIN aluno_horarios ah ON ah.aluno_id = a.id
+      WHERE a.empresa_id = $1
+      GROUP BY a.id, f.id
+      ORDER BY a.nome ASC`,
       [empresaId],
     );
 
@@ -59,6 +63,7 @@ async function criarAluno(req, res) {
       valor_mensalidade,
       ativo,
       observacao,
+      funcionario_id,
       horarios,
     } = req.body;
 
@@ -80,9 +85,10 @@ async function criarAluno(req, res) {
           dia_vencimento,
           valor_mensalidade,
           ativo,
-          observacao
+          observacao,
+          funcionario_id
        )
-       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
+       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
        RETURNING *`,
       [
         empresaId,
@@ -94,6 +100,7 @@ async function criarAluno(req, res) {
         valor_mensalidade || 0,
         ativo === undefined ? true : ativo,
         observacao || null,
+        funcionario_id || null,
       ],
     );
 
@@ -146,6 +153,7 @@ async function atualizarAluno(req, res) {
       valor_mensalidade,
       ativo,
       observacao,
+      funcionario_id,
       horarios,
     } = req.body;
 
@@ -184,9 +192,10 @@ async function atualizarAluno(req, res) {
           valor_mensalidade = $6,
           ativo = $7,
           observacao = $8,
+          funcionario_id = $9,
           updated_at = CURRENT_TIMESTAMP
-       WHERE id = $9
-       AND empresa_id = $10
+       WHERE id = $10
+       AND empresa_id = $11
        RETURNING *`,
       [
         nome,
@@ -197,6 +206,7 @@ async function atualizarAluno(req, res) {
         valor_mensalidade || 0,
         ativo === undefined ? true : ativo,
         observacao || null,
+        funcionario_id || null,
         id,
         empresaId,
       ],

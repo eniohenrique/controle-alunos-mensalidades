@@ -15,6 +15,7 @@ import {
   UserRound,
   BarChart3,
   LogOut,
+  BriefcaseBusiness,
 } from "lucide-react";
 import PropTypes from "prop-types";
 
@@ -37,6 +38,8 @@ function Dashboard({
   onAbrirMensalidades,
   onAbrirPerfil,
   onAbrirRelatorios,
+  onAbrirFuncionarios,
+  onAbrirComissoes,
 }) {
   const [mensalidades, setMensalidades] = useState([]);
   const [atrasadas, setAtrasadas] = useState([]);
@@ -223,6 +226,40 @@ function Dashboard({
               <ReceiptText size={54} className="add-watermark" />
             </button>
 
+            <button
+              className="report-shortcut-card"
+              type="button"
+              onClick={onAbrirFuncionarios}
+            >
+              <div>
+                <BriefcaseBusiness size={30} />
+              </div>
+
+              <span>
+                <strong>Funcionários</strong>
+                <small>Cadastre professores e configure comissões</small>
+              </span>
+
+              <BriefcaseBusiness size={54} className="add-watermark" />
+            </button>
+
+            <button
+              className="report-shortcut-card"
+              type="button"
+              onClick={onAbrirComissoes}
+            >
+              <div>
+                <Wallet size={30} />
+              </div>
+
+              <span>
+                <strong>Comissões</strong>
+                <small>Veja quanto pagar para cada funcionário</small>
+              </span>
+
+              <Wallet size={54} className="add-watermark" />
+            </button>
+
             <section className="section-title-row">
               <div>
                 <Clock3 size={21} />
@@ -328,5 +365,7 @@ Dashboard.propTypes = {
   onAbrirMensalidades: PropTypes.func.isRequired,
   onAbrirPerfil: PropTypes.func.isRequired,
   onAbrirRelatorios: PropTypes.func.isRequired,
+  onAbrirFuncionarios: PropTypes.func.isRequired,
+  onAbrirComissoes: PropTypes.func.isRequired,
 };
 export default Dashboard;

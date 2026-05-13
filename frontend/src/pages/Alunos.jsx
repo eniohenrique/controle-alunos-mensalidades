@@ -171,6 +171,16 @@ function Alunos({ onVoltar, onNovoAluno, onEditarAluno }) {
                     </div>
                   </div>
 
+                  {aluno.funcionario_nome && (
+                    <div className="student-schedules">
+                      <UserRound size={17} />
+
+                      <div>
+                        <span>Funcionário: {aluno.funcionario_nome}</span>
+                      </div>
+                    </div>
+                  )}
+
                   <div className="student-schedules">
                     <Clock3 size={17} />
 

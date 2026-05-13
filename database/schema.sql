@@ -58,3 +58,19 @@ CREATE TABLE mensalidades (
 
     CONSTRAINT uq_mensalidade_aluno_mes_ano UNIQUE (aluno_id, mes, ano)
 );
+
+CREATE TABLE IF NOT EXISTS funcionarios (
+  id SERIAL PRIMARY KEY,
+  empresa_id INTEGER NOT NULL REFERENCES empresas(id) ON DELETE CASCADE,
+  nome VARCHAR(150) NOT NULL,
+  telefone VARCHAR(30),
+  email VARCHAR(150),
+  percentual_comissao NUMERIC(5,2) NOT NULL DEFAULT 40.00,
+  ativo BOOLEAN NOT NULL DEFAULT true,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+
+ALTER TABLE alunos
+ADD COLUMN IF NOT EXISTS funcionario_id INTEGER REFERENCES funcionarios(id) ON DELETE SET NULL;
