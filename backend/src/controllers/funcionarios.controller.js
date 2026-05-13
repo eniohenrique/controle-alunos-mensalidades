@@ -10,7 +10,6 @@ async function listarFuncionarios(req, res) {
           nome,
           telefone,
           email,
-          percentual_comissao,
           ativo,
           created_at,
           updated_at
@@ -34,7 +33,7 @@ async function criarFuncionario(req, res) {
   try {
     const empresaId = req.usuario.empresa_id;
 
-    const { nome, telefone, email, percentual_comissao, ativo } = req.body;
+    const { nome, telefone, email, ativo } = req.body;
 
     if (!nome || !nome.trim()) {
       return res.status(400).json({
@@ -48,17 +47,15 @@ async function criarFuncionario(req, res) {
           nome,
           telefone,
           email,
-          percentual_comissao,
           ativo
        )
-       VALUES ($1, $2, $3, $4, $5, $6)
+       VALUES ($1, $2, $3, $4, $5)
        RETURNING *`,
       [
         empresaId,
         nome.trim(),
         telefone || null,
         email || null,
-        percentual_comissao || 40,
         ativo === undefined ? true : ativo,
       ],
     );
@@ -81,7 +78,7 @@ async function atualizarFuncionario(req, res) {
     const empresaId = req.usuario.empresa_id;
     const { id } = req.params;
 
-    const { nome, telefone, email, percentual_comissao, ativo } = req.body;
+    const { nome, telefone, email, ativo } = req.body;
 
     if (!nome || !nome.trim()) {
       return res.status(400).json({
@@ -95,17 +92,15 @@ async function atualizarFuncionario(req, res) {
           nome = $1,
           telefone = $2,
           email = $3,
-          percentual_comissao = $4,
-          ativo = $5,
+          ativo = $4,
           updated_at = CURRENT_TIMESTAMP
-       WHERE id = $6
-       AND empresa_id = $7
+       WHERE id = $5
+       AND empresa_id = $6
        RETURNING *`,
       [
         nome.trim(),
         telefone || null,
         email || null,
-        percentual_comissao || 40,
         ativo === undefined ? true : ativo,
         id,
         empresaId,
@@ -143,7 +138,7 @@ async function listarComissoes(req, res) {
       `SELECT
           f.id AS funcionario_id,
           f.nome AS funcionario_nome,
-          f.percentual_comissao,
+          a.percentual_comissao_funcionario,
 
           a.id AS aluno_id,
           a.nome AS aluno_nome,
@@ -158,7 +153,7 @@ async function listarComissoes(req, res) {
           m.data_pagamento,
 
           ROUND(
-            (COALESCE(m.valor, 0) * f.percentual_comissao / 100),
+            (COALESCE(m.valor, 0) * COALESCE(a.percentual_comissao_funcionario, 0) / 100),
             2
           ) AS valor_comissao
        FROM mensalidades m
@@ -182,7 +177,7 @@ async function listarComissoes(req, res) {
         funcionariosMap.set(item.funcionario_id, {
           funcionario_id: item.funcionario_id,
           funcionario_nome: item.funcionario_nome,
-          percentual_comissao: Number(item.percentual_comissao || 0),
+          percentual_comissao: null,
           total_recebido: 0,
           total_comissao: 0,
           quantidade_alunos: 0,
@@ -200,6 +195,7 @@ async function listarComissoes(req, res) {
         aluno_id: item.aluno_id,
         aluno_nome: item.aluno_nome,
         valor_pago: Number(item.valor_pago || 0),
+        percentual_comissao: Number(item.percentual_comissao_funcionario || 0),
         valor_comissao: Number(item.valor_comissao || 0),
         data_pagamento: item.data_pagamento,
       });

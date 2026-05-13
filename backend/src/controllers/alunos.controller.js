@@ -16,8 +16,8 @@ async function listarAlunos(req, res) {
           a.ativo,
           a.observacao,
           a.funcionario_id,
+          a.percentual_comissao_funcionario,
           f.nome AS funcionario_nome,
-          f.percentual_comissao AS funcionario_percentual_comissao,
           a.created_at,
           COALESCE(
             json_agg(
@@ -64,6 +64,7 @@ async function criarAluno(req, res) {
       ativo,
       observacao,
       funcionario_id,
+      percentual_comissao_funcionario,
       horarios,
     } = req.body;
 
@@ -86,9 +87,10 @@ async function criarAluno(req, res) {
           valor_mensalidade,
           ativo,
           observacao,
-          funcionario_id
+          funcionario_id,
+          percentual_comissao_funcionario
        )
-       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
+       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)
        RETURNING *`,
       [
         empresaId,
@@ -101,6 +103,7 @@ async function criarAluno(req, res) {
         ativo === undefined ? true : ativo,
         observacao || null,
         funcionario_id || null,
+        funcionario_id ? percentual_comissao_funcionario || null : null,
       ],
     );
 
@@ -154,6 +157,7 @@ async function atualizarAluno(req, res) {
       ativo,
       observacao,
       funcionario_id,
+      percentual_comissao_funcionario,
       horarios,
     } = req.body;
 
@@ -193,9 +197,10 @@ async function atualizarAluno(req, res) {
           ativo = $7,
           observacao = $8,
           funcionario_id = $9,
+          percentual_comissao_funcionario = $10,
           updated_at = CURRENT_TIMESTAMP
-       WHERE id = $10
-       AND empresa_id = $11
+       WHERE id = $11
+       AND empresa_id = $12
        RETURNING *`,
       [
         nome,
@@ -207,6 +212,7 @@ async function atualizarAluno(req, res) {
         ativo === undefined ? true : ativo,
         observacao || null,
         funcionario_id || null,
+        funcionario_id ? percentual_comissao_funcionario || null : null,
         id,
         empresaId,
       ],

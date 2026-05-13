@@ -27,7 +27,6 @@ function Funcionarios({ onVoltar }) {
     nome: "",
     telefone: "",
     email: "",
-    percentual_comissao: "40",
     ativo: true,
   });
 
@@ -69,7 +68,6 @@ function Funcionarios({ onVoltar }) {
       nome: "",
       telefone: "",
       email: "",
-      percentual_comissao: "40",
       ativo: true,
     });
     setModalAberto(true);
@@ -82,7 +80,6 @@ function Funcionarios({ onVoltar }) {
       nome: funcionario.nome || "",
       telefone: funcionario.telefone || "",
       email: funcionario.email || "",
-      percentual_comissao: funcionario.percentual_comissao || "40",
       ativo: funcionario.ativo === undefined ? true : funcionario.ativo,
     });
     setModalAberto(true);
@@ -103,11 +100,6 @@ function Funcionarios({ onVoltar }) {
       return;
     }
 
-    if (Number(form.percentual_comissao) < 0) {
-      setErro("A comissão não pode ser menor que 0%.");
-      return;
-    }
-
     try {
       setSalvando(true);
 
@@ -115,7 +107,6 @@ function Funcionarios({ onVoltar }) {
 
       const payload = {
         ...form,
-        percentual_comissao: Number(form.percentual_comissao || 40),
       };
 
       if (funcionarioEdicao?.id) {
@@ -155,7 +146,7 @@ function Funcionarios({ onVoltar }) {
 
           <div>
             <h1>Funcionários</h1>
-            <p>Cadastre professores e configure comissão</p>
+            <p>Cadastre e gerencie os funcionários</p>
           </div>
         </header>
 
@@ -214,13 +205,6 @@ function Funcionarios({ onVoltar }) {
 
                   <div className="student-info-grid">
                     <div>
-                      <CheckCircle2 size={17} />
-                      <span>
-                        Comissão: {Number(funcionario.percentual_comissao)}%
-                      </span>
-                    </div>
-
-                    <div>
                       <UserRound size={17} />
                       <span>{funcionario.telefone || "Sem telefone"}</span>
                     </div>
@@ -252,7 +236,7 @@ function Funcionarios({ onVoltar }) {
                       ? "Editar funcionário"
                       : "Cadastrar funcionário"}
                   </h2>
-                  <p>Dados e comissão do funcionário</p>
+                  <p>Dados do funcionário</p>
                 </div>
 
                 <button type="button" onClick={fecharModal}>
@@ -281,19 +265,6 @@ function Funcionarios({ onVoltar }) {
                   value={form.email}
                   onChange={(e) => atualizarCampo("email", e.target.value)}
                   placeholder="funcionario@email.com"
-                />
-
-                <label>Comissão (%)</label>
-                <input
-                  type="number"
-                  step="0.01"
-                  min="0"
-                  max="100"
-                  value={form.percentual_comissao}
-                  onChange={(e) =>
-                    atualizarCampo("percentual_comissao", e.target.value)
-                  }
-                  placeholder="Ex: 40"
                 />
 
                 <button

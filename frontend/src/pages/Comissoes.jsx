@@ -149,9 +149,7 @@ function Comissoes({ onVoltar }) {
 
                   <div>
                     <strong>{funcionario.funcionario_nome}</strong>
-                    <span>
-                      Comissão de {Number(funcionario.percentual_comissao)}%
-                    </span>
+                    <span>Comissão variável por aluno</span>
                   </div>
 
                   <span className="payment-status paid">
@@ -180,7 +178,8 @@ function Comissoes({ onVoltar }) {
                   <div className="payment-paid-info" key={aluno.aluno_id}>
                     <UserRound size={16} />
                     <span>
-                      {aluno.aluno_nome}: {formatMoney(aluno.valor_pago)} →{" "}
+                      {aluno.aluno_nome}: {formatMoney(aluno.valor_pago)} x{" "}
+                      {Number(aluno.percentual_comissao)}% ={" "}
                       {formatMoney(aluno.valor_comissao)}
                     </span>
                   </div>

@@ -74,3 +74,6 @@ CREATE TABLE IF NOT EXISTS funcionarios (
 
 ALTER TABLE alunos
 ADD COLUMN IF NOT EXISTS funcionario_id INTEGER REFERENCES funcionarios(id) ON DELETE SET NULL;
+
+ALTER TABLE alunos
+ADD COLUMN IF NOT EXISTS percentual_comissao_funcionario NUMERIC(5,2);

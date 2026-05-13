@@ -49,6 +49,7 @@ function AlunoForm({ onVoltar, onSalvo, alunoEdicao }) {
     ativo: true,
     observacao: "",
     funcionario_id: "",
+    percentual_comissao_funcionario: "",
   });
 
   const [horarios, setHorarios] = useState([]);
@@ -93,6 +94,8 @@ function AlunoForm({ onVoltar, onSalvo, alunoEdicao }) {
         ativo: alunoEdicao.ativo === undefined ? true : alunoEdicao.ativo,
         observacao: alunoEdicao.observacao || "",
         funcionario_id: alunoEdicao.funcionario_id || "",
+        percentual_comissao_funcionario:
+          alunoEdicao.percentual_comissao_funcionario || "",
       });
 
       setHorarios(alunoEdicao.horarios || []);
@@ -150,6 +153,11 @@ function AlunoForm({ onVoltar, onSalvo, alunoEdicao }) {
       return;
     }
 
+    if (vincularFuncionario && !form.percentual_comissao_funcionario) {
+      setErro("Informe a porcentagem de comissão do funcionário.");
+      return;
+    }
+
     try {
       setSalvando(true);
 
@@ -161,6 +169,9 @@ function AlunoForm({ onVoltar, onSalvo, alunoEdicao }) {
         valor_mensalidade: Number(form.valor_mensalidade || 0),
         funcionario_id: vincularFuncionario
           ? form.funcionario_id || null
+          : null,
+        percentual_comissao_funcionario: vincularFuncionario
+          ? Number(form.percentual_comissao_funcionario || 0)
           : null,
         horarios,
       };
@@ -318,11 +329,26 @@ function AlunoForm({ onVoltar, onSalvo, alunoEdicao }) {
 
                       {funcionarios.map((funcionario) => (
                         <option key={funcionario.id} value={funcionario.id}>
-                          {funcionario.nome} -{" "}
-                          {Number(funcionario.percentual_comissao)}%
+                          {funcionario.nome}
                         </option>
                       ))}
                     </select>
+
+                    <label>Comissão deste aluno (%)</label>
+                    <input
+                      type="number"
+                      step="0.01"
+                      min="0"
+                      max="100"
+                      value={form.percentual_comissao_funcionario}
+                      onChange={(e) =>
+                        atualizarCampo(
+                          "percentual_comissao_funcionario",
+                          e.target.value,
+                        )
+                      }
+                      placeholder="Ex: 40"
+                    />
                   </>
                 )}
               </>
