@@ -229,7 +229,7 @@ function Funcionarios({ onVoltar }) {
 
                     <button
                       type="button"
-                      className="whatsapp-button"
+                      className="employee-whatsapp-button"
                       onClick={() => abrirWhatsApp(funcionario.telefone)}
                       disabled={!funcionario.telefone}
                     >
