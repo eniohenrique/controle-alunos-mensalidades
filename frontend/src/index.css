@@ -2032,7 +2032,6 @@ button {
     background: transparent;
     color: #006b55;
     cursor: pointer;
-    padding: 2px;
     display: inline-flex;
     align-items: center;
     justify-content: center;
