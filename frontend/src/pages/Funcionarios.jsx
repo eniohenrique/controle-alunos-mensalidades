@@ -3,6 +3,7 @@ import axios from "axios";
 import {
   ArrowLeft,
   CheckCircle2,
+  Copy,
   Edit,
   Mail,
   MessageCircle,
@@ -106,7 +107,25 @@ function Funcionarios({ onVoltar }) {
   function abrirEmail(email) {
     if (!email) return;
 
-    window.location.href = `mailto:${email}`;
+    const emailLimpo = String(email).trim();
+
+    if (!emailLimpo) return;
+
+    const url = `https://mail.google.com/mail/?view=cm&fs=1&to=${encodeURIComponent(
+      emailLimpo,
+    )}`;
+
+    window.open(url, "_blank");
+  }
+
+  async function copiarTexto(texto) {
+    if (!texto) return;
+
+    try {
+      await navigator.clipboard.writeText(String(texto));
+    } catch (error) {
+      console.error("Erro ao copiar:", error);
+    }
   }
 
   async function salvarFuncionario(e) {
@@ -199,7 +218,21 @@ function Funcionarios({ onVoltar }) {
 
                     <div>
                       <strong>{funcionario.nome}</strong>
-                      <span>{funcionario.email || "Sem e-mail"}</span>
+
+                      <span className="employee-email-line">
+                        {funcionario.email || "Sem e-mail"}
+
+                        {funcionario.email && (
+                          <button
+                            type="button"
+                            className="copy-email-button"
+                            onClick={() => copiarTexto(funcionario.email)}
+                            title="Copiar e-mail"
+                          >
+                            <Copy size={14} />
+                          </button>
+                        )}
+                      </span>
                     </div>
 
                     <div
@@ -222,9 +255,20 @@ function Funcionarios({ onVoltar }) {
                   </div>
 
                   <div className="student-info-grid">
-                    <div>
+                    <div className="employee-contact-info">
                       <UserRound size={17} />
                       <span>{funcionario.telefone || "Sem telefone"}</span>
+
+                      {funcionario.telefone && (
+                        <button
+                          type="button"
+                          className="copy-contact-button"
+                          onClick={() => copiarTexto(funcionario.telefone)}
+                          title="Copiar telefone"
+                        >
+                          <Copy size={15} />
+                        </button>
+                      )}
                     </div>
 
                     <button
