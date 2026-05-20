@@ -226,9 +226,7 @@ function Funcionarios({ onVoltar }) {
                       <UserRound size={17} />
                       <span>{funcionario.telefone || "Sem telefone"}</span>
                     </div>
-                  </div>
 
-                  <div className="student-actions">
                     <button
                       type="button"
                       className="whatsapp-button"
@@ -237,6 +235,17 @@ function Funcionarios({ onVoltar }) {
                     >
                       <MessageCircle size={18} />
                       WhatsApp
+                    </button>
+                  </div>
+
+                  <div className="student-actions">
+                    <button
+                      type="button"
+                      className="edit-student-button"
+                      onClick={() => abrirEditarFuncionario(funcionario)}
+                    >
+                      <Edit size={18} />
+                      Editar
                     </button>
 
                     <button
@@ -247,15 +256,6 @@ function Funcionarios({ onVoltar }) {
                     >
                       <Mail size={18} />
                       E-mail
-                    </button>
-
-                    <button
-                      type="button"
-                      className="edit-student-button"
-                      onClick={() => abrirEditarFuncionario(funcionario)}
-                    >
-                      <Edit size={18} />
-                      Editar
                     </button>
                   </div>
                 </article>

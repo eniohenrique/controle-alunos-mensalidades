@@ -1975,7 +1975,16 @@ button {
     filter: brightness(0.98);
 }
 
-.student-actions button:disabled {
+.student-info-grid button {
+    border: 0;
+    border-radius: 18px;
+    padding: 14px 10px;
+    font-weight: 800;
+    cursor: pointer;
+}
+
+.student-actions button:disabled,
+.student-info-grid button:disabled {
     opacity: 0.5;
     cursor: not-allowed;
 }
