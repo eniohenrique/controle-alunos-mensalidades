@@ -38,6 +38,7 @@ function formatDate(value) {
 function Alunos({ onVoltar, onNovoAluno, onEditarAluno }) {
   const [alunos, setAlunos] = useState([]);
   const [busca, setBusca] = useState("");
+  const [filtroStatus, setFiltroStatus] = useState("TODOS");
   const [carregando, setCarregando] = useState(true);
 
   async function carregarAlunos() {
@@ -73,6 +74,15 @@ function Alunos({ onVoltar, onNovoAluno, onEditarAluno }) {
 
   const alunosFiltrados = alunos.filter((aluno) => {
     const termo = busca.toLowerCase().trim();
+
+    const passouNoFiltroStatus =
+      filtroStatus === "TODOS" ||
+      (filtroStatus === "ATIVOS" && aluno.ativo) ||
+      (filtroStatus === "INATIVOS" && !aluno.ativo);
+
+    if (!passouNoFiltroStatus) {
+      return false;
+    }
 
     if (!termo) return true;
 
@@ -119,6 +129,32 @@ function Alunos({ onVoltar, onNovoAluno, onEditarAluno }) {
             onChange={(e) => setBusca(e.target.value)}
             placeholder="Buscar por nome, telefone ou CPF"
           />
+        </section>
+
+        <section className="student-filter-row">
+          <button
+            type="button"
+            className={filtroStatus === "TODOS" ? "selected" : ""}
+            onClick={() => setFiltroStatus("TODOS")}
+          >
+            Todos
+          </button>
+
+          <button
+            type="button"
+            className={filtroStatus === "ATIVOS" ? "selected" : ""}
+            onClick={() => setFiltroStatus("ATIVOS")}
+          >
+            Ativos
+          </button>
+
+          <button
+            type="button"
+            className={filtroStatus === "INATIVOS" ? "selected" : ""}
+            onClick={() => setFiltroStatus("INATIVOS")}
+          >
+            Inativos
+          </button>
         </section>
 
         {carregando ? (

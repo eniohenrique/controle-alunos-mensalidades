@@ -1948,3 +1948,29 @@ button {
     font-size: 14px;
     white-space: nowrap;
 }
+
+.student-filter-row {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+    margin: 14px 0 22px;
+}
+
+.student-filter-row button {
+    border: 0;
+    border-radius: 18px;
+    padding: 14px 10px;
+    background: #eef5f1;
+    color: #005747;
+    font-weight: 800;
+    cursor: pointer;
+}
+
+.student-filter-row button.selected {
+    background: linear-gradient(135deg, #19734f, #2f9d75);
+    color: #ffffff;
+}
+
+.student-filter-row button:hover {
+    filter: brightness(0.98);
+}
