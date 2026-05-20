@@ -57,6 +57,7 @@ async function listarMensalidades(req, res) {
          AND m.mes = $2
          AND m.ano = $3
        WHERE a.empresa_id = $1
+          AND a.ativo = true
        ORDER BY a.nome ASC`,
       [empresaId, mes, ano],
     );
