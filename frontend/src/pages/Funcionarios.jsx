@@ -4,6 +4,8 @@ import {
   ArrowLeft,
   CheckCircle2,
   Edit,
+  Mail,
+  MessageCircle,
   Plus,
   Save,
   UserCheck,
@@ -89,6 +91,22 @@ function Funcionarios({ onVoltar }) {
     setModalAberto(false);
     setFuncionarioEdicao(null);
     setErro("");
+  }
+
+  function abrirWhatsApp(telefone) {
+    if (!telefone) return;
+
+    const numero = String(telefone).replace(/\D/g, "");
+
+    if (!numero) return;
+
+    window.open(`https://wa.me/55${numero}`, "_blank");
+  }
+
+  function abrirEmail(email) {
+    if (!email) return;
+
+    window.location.href = `mailto:${email}`;
   }
 
   async function salvarFuncionario(e) {
@@ -211,6 +229,26 @@ function Funcionarios({ onVoltar }) {
                   </div>
 
                   <div className="student-actions">
+                    <button
+                      type="button"
+                      className="whatsapp-button"
+                      onClick={() => abrirWhatsApp(funcionario.telefone)}
+                      disabled={!funcionario.telefone}
+                    >
+                      <MessageCircle size={18} />
+                      WhatsApp
+                    </button>
+
+                    <button
+                      type="button"
+                      className="edit-student-button"
+                      onClick={() => abrirEmail(funcionario.email)}
+                      disabled={!funcionario.email}
+                    >
+                      <Mail size={18} />
+                      E-mail
+                    </button>
+
                     <button
                       type="button"
                       className="edit-student-button"

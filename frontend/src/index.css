@@ -1974,3 +1974,8 @@ button {
 .student-filter-row button:hover {
     filter: brightness(0.98);
 }
+
+.student-actions button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
